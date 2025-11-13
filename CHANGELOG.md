@@ -1,0 +1,15 @@
+# Changelog
+
+All notable changes to this project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
+
+## [1.0.0] - 2025-11-13
+
+### Added
+* Initial version of the Click2Buy server-side tag template.
+* Handled attribution via the `c2bm` URL parameter on the `page_view` event.
+* Stored the attribution ID in a 1st-party cookie (`_c2b_attribution_id`).
+* Sent the conversion event to the Click2Buy backend upon the `purchase` event.
+* Configured security permissions (Cookies, HTTP Request, Event Data).
+* Added unit tests for `page_view` (positive and negative) and `purchase` cases.
