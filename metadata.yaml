@@ -1,0 +1,5 @@
+homepage: "https://www.click2buy.com"
+documentation: "https://github.com/Click2Buy/gtm-server-template/blob/master/README.md""
+versions:
+  - sha: 548aec4ce261cfd34e7065be68ce72c7f6e3de7f
+    changeNotes: Initial release
