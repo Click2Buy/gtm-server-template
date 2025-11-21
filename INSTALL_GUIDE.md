@@ -39,15 +39,17 @@ To optimize performance and cost, your tag should only run on relevant events: t
 
 1.  In your GTM **Server** container, go to **Triggers**.
 2.  Click **New** and name it (e.g., `[C2B] - PageView and Conversions`).
-3.  Trigger Type: **Custom Event**.
-4.  This trigger fires on: **Some Custom Events**.
+3.  Trigger Type: **Custom**.
+4.  This trigger fires on: **Some Events**.
 5.  Set the following conditions:
-    * `Client Name` - `contains` - `GA4` (or `Universal Analytics` if you use the legacy format)
-    * `Event Name` - `matches RegEx` - `^(page_view|purchase|generate_lead)$`
+    * `{{Client Name}}` - `equals` - `GA4`
+    * `{{Event Name}}` - `matches RegEx` - `^(page_view|purchase|generate_lead)$`
 
-    
+    > **Note:** You can select the "Client Name" or "Event Name" variables by clicking on the variable selection icon (brick).
 
     > **Important:** If your primary conversion event is not `purchase` or `generate_lead`, add it to the RegEx (e.g., `^(page_view|purchase|form_submission|my_event)$`).
+
+6.  Click **Save**.
 
 ### Step 1.3: Create the Click2Buy Tag
 

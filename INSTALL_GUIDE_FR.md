@@ -39,15 +39,18 @@ Pour optimiser les performances et les coûts, votre balise ne doit s'exécuter 
 
 1.  Dans votre conteneur **Serveur**, allez dans **Déclencheurs**.
 2.  Cliquez sur **Nouveau** et nommez-le (ex: `[C2B] - PageView et Conversions`).
-3.  Type de déclencheur : **Événement personnalisé**.
-4.  Se déclenche sur : **Certains événements personnalisés**.
+3.  Type de déclencheur : **Personnalisé**.
+4.  Se déclenche sur : **Certains événements**.
 5.  Définissez les conditions suivantes :
-    * `Client Name` - `contient` - `GA4` (ou `Universal Analytics` si vous utilisez l'ancien format)
-    * `Event Name` - `correspond à l'expression régulière` - `^(page_view|purchase|generate_lead)$`
+    * `{{Client Name}}` - `est égal(e) à` - `GA4`
+    * `{{Event Name}}` - `correspond à l'expression régulière` - `^(page_view|purchase|generate_lead)$`
 
-    
+    > **Note :** Vous pouvez sélectionner les variables "Client Name" ou "Event Name" en cliquant sur l'icône de sélection de variable (brique).
+
 
     > **Important :** Si votre événement de conversion principal n'est pas `purchase` ou `generate_lead`, ajoutez-le à l'expression régulière (ex: `^(page_view|purchase|form_submission|mon_event)$`).
+
+6.  Cliquez sur **Enregistrer**.
 
 ### Étape 1.3 : Créer la balise Click2Buy
 
