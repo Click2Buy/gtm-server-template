@@ -1,5 +1,7 @@
 homepage: "https://www.click2buy.com"
-documentation: "https://github.com/Click2Buy/gtm-server-template/blob/master/README.md""
+documentation: "https://github.com/Click2Buy/gtm-server-template/blob/master/README.md"
 versions:
   - sha: 548aec4ce261cfd34e7065be68ce72c7f6e3de7f
     changeNotes: Initial release
+  - sha: c965a8bb9e8d3b9556d20ce5cf8175871771b498
+    changeNotes: Added categories to metadata
