@@ -13,6 +13,10 @@ ___INFO___
   "id": "cvt_temp_public_id",
   "version": 1,
   "securityGroups": [],
+  "categories": [
+    "ANALYTICS",
+    "CONVERSIONS"
+  ],
   "displayName": "Click2Buy tag for retailers",
   "brand": {
     "id": "brand_dummy",
