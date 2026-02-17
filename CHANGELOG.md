@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [1.2.0] - 2026-02-17
+
+### Added
+* Added support for `value`, `currency`, `transaction_id` and `items` in the purchase event.
+
 ## [1.1.0] - 2026-01-08
 
 ### Added

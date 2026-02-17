@@ -92,6 +92,7 @@ const setCookie = require('setCookie');
 const getCookieValues = require('getCookieValues');
 const parseUrl = require('parseUrl');
 const encodeUriComponent = require('encodeUriComponent');
+const JSON = require('JSON');
 
 const eventModel = getAllEventData();
 
@@ -151,6 +152,19 @@ switch (eventModel.event_name) {
     const urlParams = [
       'param=' + safeEncodeUriComponent(c2bCookie[0])
     ];
+
+    if (eventModel.value) {
+      urlParams.push('value=' + safeEncodeUriComponent(eventModel.value + ''));
+    }
+    if (eventModel.currency) {
+      urlParams.push('currency=' + safeEncodeUriComponent(eventModel.currency));
+    }
+    if (eventModel.transaction_id) {
+      urlParams.push('transaction_id=' + safeEncodeUriComponent(eventModel.transaction_id));
+    }
+    if (eventModel.items) {
+      urlParams.push('items=' + safeEncodeUriComponent(JSON.stringify(eventModel.items)));
+    }
 
     const urlParamsString = urlParams.filter((v) => v).join('&');
 
@@ -394,21 +408,48 @@ scenarios:
     \n// Le script doit juste se terminer avec succès, sans erreur\nassertApi('gtmOnSuccess').wasCalled();\n\
     assertApi('gtmOnFailure').wasNotCalled();"
 - name: Test purchase event
-  code: "// 1. ARRANGE: Définir le contexte et les mocks\nconst mockData = {\n  //\
-    \ Ceci est le 'data' passé à runCode(data)\n  // Il doit correspondre aux \"Champs\"\
-    \ (Fields) de votre template\n  purchaseEvent: 'purchase', // <-- C'EST LA CORRECTION\
-    \ CLÉ\n\n  // Le reste est pour notre usage interne au test\n  cookieName: '_c2b_attribution_id',\n\
-    \  cookieValue: 'id-test-12345',\n  expectedUrlParam: 'id-test-12345'\n};\n\n\
-    // Mocks des \"entrées\" (ce que le code va lire)\nmock('getAllEventData', ()\
-    \ => ({ \n  // Ceci simule l'événement entrant réel\n  event_name: 'purchase'\
-    \ \n}));\n\nmock('getCookieValues', (name) => {\n  assertThat(name).isEqualTo(mockData.cookieName);\n\
-    \  return [mockData.cookieValue];\n});\n\n// Mocks des \"sorties\" (ce que le\
-    \ code va appeler)\nmock('sendHttpRequest', (url, callback) => {\n  assertThat(url).contains(mockData.expectedUrlParam);\n\
-    \  callback(200, {}, 'OK');\n});\nmock('setCookie', () => {}); // Mock espion\n\
-    \n// 2. ACT: Exécuter le code\nrunCode(mockData); // data.purchaseEvent vaut bien\
-    \ 'purchase'\n\n// 3. ASSERT: Vérifier le comportement\nassertApi('getCookieValues').wasCalled();\
-    \ // Devrait être appelé !\nassertApi('sendHttpRequest').wasCalled();\nassertApi('setCookie').wasNotCalled();\n\
-    assertApi('gtmOnSuccess').wasCalled();"
+  code: |-
+    // 1. ARRANGE: Définir le contexte et les mocks
+    const testMockData = {
+      purchaseEvent: 'purchase'
+    };
+
+    const items = [{
+      item_id: 'SKU_123',
+      item_name: 'Product 1',
+      price: 10,
+      quantity: 1
+    }];
+
+    mock('getAllEventData', () => ({
+      event_name: 'purchase',
+      value: 10,
+      currency: 'EUR',
+      transaction_id: 'T_12345',
+      items: items
+    }));
+
+    mock('getCookieValues', (name) => {
+      assertThat(name).isEqualTo('_c2b_attribution_id');
+      return ['id-test-12345'];
+    });
+
+    mock('sendHttpRequest', (url, callback) => {
+      assertThat(url).contains('param=id-test-12345');
+      assertThat(url).contains('value=10');
+      assertThat(url).contains('currency=EUR');
+      assertThat(url).contains('transaction_id=T_12345');
+      assertThat(url).contains('items=%5B%7B%22item_id%22%3A%22SKU_123%22%2C%22item_name%22%3A%22Product%201%22%2C%22price%22%3A10%2C%22quantity%22%3A1%7D%5D');
+      callback(200, {}, 'OK');
+    });
+    mock('setCookie', () => {});
+
+    // 2. ACT
+    runCode(testMockData);
+
+    // 3. ASSERT
+    assertApi('sendHttpRequest').wasCalled();
+    assertApi('gtmOnSuccess').wasCalled();
 
 
 ___NOTES___
