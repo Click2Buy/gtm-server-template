@@ -5,3 +5,5 @@ versions:
     changeNotes: Initial release
   - sha: c965a8bb9e8d3b9556d20ce5cf8175871771b498
     changeNotes: Added categories to metadata
+  - sha: 85a2d9adc4da6de279adaa066e931d3807925902
+    changeNotes: Enhance purchase event handling by adding support for value, currency, transaction ID, and items in the URL parameters
