@@ -115,11 +115,11 @@ Vous avez terminé la configuration. Il ne reste plus qu'à publier et tester.
 
 **Test 1 : L'attribution (pose du cookie)**
 
-1.  Dans votre navigateur, ouvrez une page de votre site en ajoutant notre paramètre de test à l'URL :
-    `https://www.votresite.com/?c2bm=12345test`
+1.  Dans votre navigateur, ouvrez une page de votre site avec le paramètre de test fourni par Click2Buy, qui contient votre identifiant retailer :
+    `https://www.votresite.com/?c2bm=rid:<votre identifiant retailer>;test:1`
 2.  Dans votre **Preview Serveur**, vous devriez voir un événement `page_view` arriver.
 3.  Cliquez sur cet événement. La balise `Click2Buy S2S Attribution` doit apparaître dans la section **"Balises déclenchées" (Tags Fired)**.
-4.  Dans les outils de développement de votre navigateur (F12) > Application > Cookies, vous devriez voir un **nouveau cookie first-party** (ex: `_c2b_attribution_id`) avec la valeur `12345test`.
+4.  Dans les outils de développement de votre navigateur (F12) > Application > Cookies, vous devriez voir un **nouveau cookie first-party** (ex: `_c2b_attribution_id`) avec la valeur `rid:<votre identifiant retailer>;test:1`.
 
 **Test 2 : La conversion (envoi des données)**
 
@@ -127,7 +127,11 @@ Vous avez terminé la configuration. Il ne reste plus qu'à publier et tester.
 2.  Dans votre **Preview Serveur**, vous devriez voir l'événement `purchase` arriver.
 3.  Cliquez sur cet événement. La balise `Click2Buy S2S Attribution` doit à nouveau être dans les **"Balises déclenchées"**.
 4.  Cliquez sur cette balise pour l'inspecter. Allez dans l'onglet **"Requêtes HTTP sortantes" (Outgoing HTTP Requests)**.
-5.  Vous devriez y voir une requête envoyée avec succès à notre endpoint de suivi.
+5.  Vous devriez y voir une requête envoyée à notre endpoint de suivi, avec un statut `200` et la réponse `{"success":true,"action":"validation_test"}`.
+
+Grâce au paramètre `test:1`, cette conversion est enregistrée comme une **vente de test** : Click2Buy la voit, mais elle n'est jamais comptée dans les statistiques des marques. Vous pouvez nous prévenir une fois le test effectué.
+
+> **Astuce :** vous pouvez aussi déclencher la conversion sans passer de commande, en envoyant l'événement depuis la console de votre navigateur, par exemple `dataLayer.push({ event: 'purchase', ecommerce: { transaction_id: 'TEST-123', value: 10, currency: 'EUR' } })`. Cela ne fonctionne que si votre conteneur web transmet cet événement à votre conteneur serveur, sous le nom renseigné dans le champ **Purchase event** de la balise. Utilisez toujours un `transaction_id` factice.
 
 ---
 

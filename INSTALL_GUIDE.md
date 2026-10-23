@@ -114,11 +114,11 @@ You have completed the setup. All that's left is to publish and test.
 
 **Test 1: The Attribution (Cookie Set)**
 
-1.  In your browser, open a page on your site, adding our test parameter to the URL:
-    `https://www.your-site.com/?c2bm=12345test`
+1.  In your browser, open a page on your site with the test parameter provided by Click2Buy, which contains your retailer ID:
+    `https://www.your-site.com/?c2bm=rid:<your retailer ID>;test:1`
 2.  In your **Server Preview**, you should see a `page_view` event arrive.
 3.  Click on this event. The `Click2Buy S2S Attribution` tag should appear in the **"Tags Fired"** section.
-4.  In your browser's Developer Tools (F12) > Application > Cookies, you should see a **new first-party cookie** (e.g., `_c2b_attribution_id`) with the value `12345test`.
+4.  In your browser's Developer Tools (F12) > Application > Cookies, you should see a **new first-party cookie** (e.g., `_c2b_attribution_id`) with the value `rid:<your retailer ID>;test:1`.
 
 **Test 2: The Conversion (Data Send)**
 
@@ -126,7 +126,11 @@ You have completed the setup. All that's left is to publish and test.
 2.  In your **Server Preview**, you should see the `purchase` event arrive.
 3.  Click on this event. The `Click2Buy S2S Attribution` tag should again be in the **"Tags Fired"** section.
 4.  Click this tag to inspect it. Go to the **"Outgoing HTTP Requests"** tab.
-5.  You should see a request successfully sent to our tracking endpoint.
+5.  You should see a request sent to our tracking endpoint, with a `200` status and the response `{"success":true,"action":"validation_test"}`.
+
+Thanks to the `test:1` parameter, this conversion is recorded as a **test sale**: Click2Buy can see it, but it is never counted in the brands' statistics. You can let us know once it is done.
+
+> **Tip:** you can also trigger the conversion without placing an order, by pushing the event from your browser console, e.g. `dataLayer.push({ event: 'purchase', ecommerce: { transaction_id: 'TEST-123', value: 10, currency: 'EUR' } })`. This only works if your web container forwards this event to your server container, under the name set in the tag's **Purchase event** field. Always use a fake `transaction_id`.
 
 ---
 

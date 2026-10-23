@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
+## [Unreleased]
+
+### Changed
+* Installation guides: the test uses the test parameter provided by Click2Buy (`?c2bm=rid:<retailer ID>;test:1`), recorded as a test sale that is never counted in the statistics. No change to the template.
+
 ## [1.2.0] - 2026-02-17
 
 ### Added
