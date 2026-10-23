@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ### Changed
 * Installation guides: the test uses the test parameter provided by Click2Buy (`?c2bm=rid:<retailer ID>;test:1`), recorded as a test sale that is never counted in the statistics. No change to the template.
+* Installation guides rewritten in the style of the GTM web template guides: the tag is tested in Preview before publishing, its parameters are described, and the template is looked up under its actual name (**Click2Buy tag for retailers**).
 
 ## [1.2.0] - 2026-02-17
 

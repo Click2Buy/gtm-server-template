@@ -2,138 +2,108 @@
 
 ---
 
-# Installation Guide: Click2Buy Conversion Tracking (GTM Server-Side)
+# Click2Buy GTM Server-Side Tag Installation Guide
 
-This guide explains how to install the Click2Buy GTM Server-Side tag template to track sales and conversions referred from our platform.
+Follow these steps to implement the Click2Buy tag in your Google Tag Manager Server container.
 
-Using this server-side template ensures more robust, reliable, and high-performance tracking by leveraging first-party cookies.
-
-## ⚠️ Critical Prerequisites
-
-Before you begin, you must have the following:
-
-1.  An active and functional **GTM Server-Side (GTM-SS) container**.
-2.  This server container must be hosted on a **subdomain of your main site** (e.g., `sgtm.your-site.com`) to enable first-party cookie setting.
-3.  A **Web (client-side) GTM** configuration that sends its data to your server container (via the `server_container_url` parameter in your Google Tag).
-
-> If these prerequisites are not met, the installation will fail. Please refer to the [official Google documentation](https://developers.google.com/tag-platform/tag-manager/server-side/overview) to set up your GTM Server-Side infrastructure.
+The tag runs in your server container and handles two kinds of events:
+- **Page view**: reads the attribution parameter (`c2bm`) when the visitor lands on your website from Click2Buy, and stores it in a first-party cookie (`_c2b_attribution_id`).
+- **Conversion**: sends the order data to Click2Buy on your purchase (or lead) event.
 
 ---
 
-## 1. Server Container Configuration
+## 📋 Prerequisites
 
-In this section, we will install the core tracking logic into your GTM-SS container.
+Before starting, ensure that:
+1. You have a **Google Tag Manager Server container** up and running.
+2. Your server container is hosted on a **subdomain of your website** (e.g. `sgtm.your-website.com`), so that the attribution cookie is a first-party cookie.
+3. Your **Google Tag Manager Web container** sends its data to the server container (`server_container_url` parameter of your Google Tag).
+4. You have received the **test URL** from Click2Buy, used to test your implementation (section 5).
 
-### Step 1.1: Import the Click2Buy Tag Template
-
-1.  Download the latest version of our tag template (the `template.tpl` file) from the [Releases page of this GitHub repository](https://github.com/Click2Buy/gtm-server-template/releases).
-2.  In your GTM **Server** container, go to **Templates**.
-3.  Under "Tag Templates," click **New**.
-4.  In the template editor, click the three-dot menu (⋮) in the top-right corner and select **Import**.
-5.  Choose the `template.tpl` file you just downloaded.
-6.  Click **Save** (you can ignore the "edit code" warning, this is normal).
-
-### Step 1.2: Create the Conversion Trigger
-
-To optimize performance and cost, your tag should only run on relevant events: the initial visit (`page_view`) and conversion events (`purchase`, `generate_lead`, etc.).
-
-1.  In your GTM **Server** container, go to **Triggers**.
-2.  Click **New** and name it (e.g., `[C2B] - PageView and Conversions`).
-3.  Trigger Type: **Custom**.
-4.  This trigger fires on: **Some Events**.
-5.  Set the following conditions:
-    * `{{Client Name}}` - `equals` - `GA4`
-    * `{{Event Name}}` - `matches RegEx` - `^(page_view|purchase|generate_lead)$`
-
-    > **Note:** You can select the "Client Name" or "Event Name" variables by clicking on the variable selection icon (brick).
-
-    > **Important:** If your primary conversion event is not `purchase` or `generate_lead`, add it to the RegEx (e.g., `^(page_view|purchase|form_submission|my_event)$`).
-
-6.  Click **Save**.
-
-### Step 1.3: Create the Click2Buy Tag
-
-1.  In your GTM **Server** container, go to **Tags**.
-2.  Click **New**.
-3.  Name the tag (e.g., `Click2Buy S2S Attribution`).
-4.  Click "Tag Configuration" and choose the **"Click2Buy S2S Attribution"** template you just imported (it will appear in the "Custom" list).
-5.  Click "Triggering" and select the `[C2B] - PageView and Conversions` trigger created in step 1.2.
-6.  Click **Save**.
+If your server container is not set up yet, see the [Google documentation](https://developers.google.com/tag-platform/tag-manager/server-side/overview).
 
 ---
 
-## 2. Web (Client-Side) Container Configuration
+## 📥 1. Import the Template
 
-This section ensures your Web GTM (in the browser) correctly sends **all** events to your Server GTM, so our tag can intercept them.
-
-> If you already have a Web GTM setup that sends **all** its events (via a dynamic GA4 Event tag) to your `server_container_url`, you can skip this section.
-
-### Step 2.1: Check the Google Tag (the "Brain")
-
-1.  In your **Web** GTM container, find your main **"Google Tag"** (the one with your `G-XXXXXX` ID).
-2.  Verify that it has a `server_container_url` configuration parameter pointing to your GTM-SS subdomain (e.g., `https://sgtm.your-site.com`).
-
-### Step 2.2: Create the Event "Transporter" (if needed)
-
-For your server tag to receive `purchase` events, you must send them. The best method is a single, dynamic event tag.
-
-1.  In your **Web** container, go to **Tags** and click **New**.
-2.  Name the tag (e.g., `[GA4] - All Events (to Server)`).
-3.  Tag Type: **Google Analytics: GA4 Event**.
-4.  Configuration Tag: Select your main Google Tag (from step 2.1).
-5.  **Event Name:** `{{Event}}` (This is a built-in GTM variable that dynamically uses the event name from the `dataLayer`).
-
-### Step 2.3: Create the "All Events" Trigger (if needed)
-
-This tag must fire on all events your site sends.
-
-1.  In the tag you are creating (step 2.2), click on **Triggering**.
-2.  Create a **New** trigger (top-right corner).
-3.  Name it (e.g., `Custom - All Events (with exceptions)`).
-4.  Trigger Type: **Custom Event**.
-5.  Event name: `.*` and check the **Use RegEx matching** box.
-6.  This trigger fires on: **Some Custom Events**.
-7.  Set the following condition to exclude default GTM events:
-    * `{{Event}}` - `does not match RegEx` - `^(gtm\.(js|dom|load)|page_view)$`
-
-8.  Save the trigger, then save the tag.
+1. Download the latest `template.tpl` file from the [Releases page of this repository](https://github.com/Click2Buy/gtm-server-template/releases).
+2. Open your **Google Tag Manager** server container.
+3. In the left sidebar, click on **Templates**.
+4. In the **Tag Templates** section, click **New**.
+5. Click the **three dots (⋮)** in the top right corner and select **Import**.
+6. Select the `template.tpl` file you just downloaded.
+7. Click **Save** and close the template editor. GTM may warn you that the template code has been edited: this is expected.
 
 ---
 
-## 3. Publishing and Validation
+## ⚡ 2. Create the Trigger
 
-You have completed the setup. All that's left is to publish and test.
+The tag only needs to run on page views and on your conversion events.
 
-1.  **Publish** the changes in your **Web** container.
-2.  **Publish** the changes in your **Server** container.
+1. Go to **Triggers** and click **New**. Name the trigger `Click2Buy — Page view and conversions`.
+2. **Trigger type:** select **Custom**.
+3. **This trigger fires on:** select **Some Events** and add these two conditions:
+   - `Client Name` — `equals` — `GA4`
+   - `Event Name` — `matches RegEx` — `^(page_view|purchase|generate_lead)$`
 
-### How to test the full flow:
+   To select `Client Name` and `Event Name`, click the variable icon (brick) next to the field.
 
-1.  Open the **Preview** mode for your **Server** container.
-2.  Open the **Preview** mode for your **Web** container.
-
-**Test 1: The Attribution (Cookie Set)**
-
-1.  In your browser, open a page on your site with the test parameter provided by Click2Buy, which contains your retailer ID:
-    `https://www.your-site.com/?c2bm=rid:<your retailer ID>;test:1`
-2.  In your **Server Preview**, you should see a `page_view` event arrive.
-3.  Click on this event. The `Click2Buy S2S Attribution` tag should appear in the **"Tags Fired"** section.
-4.  In your browser's Developer Tools (F12) > Application > Cookies, you should see a **new first-party cookie** (e.g., `_c2b_attribution_id`) with the value `rid:<your retailer ID>;test:1`.
-
-**Test 2: The Conversion (Data Send)**
-
-1.  On your site (still in Preview mode), trigger a conversion event (e.g., complete a test purchase to trigger the `purchase` event).
-2.  In your **Server Preview**, you should see the `purchase` event arrive.
-3.  Click on this event. The `Click2Buy S2S Attribution` tag should again be in the **"Tags Fired"** section.
-4.  Click this tag to inspect it. Go to the **"Outgoing HTTP Requests"** tab.
-5.  You should see a request sent to our tracking endpoint, with a `200` status and the response `{"success":true,"action":"validation_test"}`.
-
-Thanks to the `test:1` parameter, this conversion is recorded as a **test sale**: Click2Buy can see it, but it is never counted in the brands' statistics. You can let us know once it is done.
-
-> **Tip:** you can also trigger the conversion without placing an order, by pushing the event from your browser console, e.g. `dataLayer.push({ event: 'purchase', ecommerce: { transaction_id: 'TEST-123', value: 10, currency: 'EUR' } })`. This only works if your web container forwards this event to your server container, under the name set in the tag's **Purchase event** field. Always use a fake `transaction_id`.
+   ⚠️ If your conversion event has another name, add it to the RegEx, e.g. `^(page_view|purchase|my_conversion)$`, and set the same name in the tag (section 3).
+4. Save the trigger.
 
 ---
 
-If both tests are successful, the installation is complete!
+## 🏷️ 3. Create the "Click2Buy — S2S attribution" Tag
 
-If you encounter any issues, please contact `retailers@click2buy.com`.
+1. Go to **Tags** and click **New**. Name the tag `Click2Buy — S2S attribution`.
+2. Click **Tag Configuration** and look for **Click2Buy tag for retailers** in the list (**Custom** section).
+3. **Parameters:** the default values fit most websites.
+   - **Page view event name**, **Purchase event name**, **Lead event name**: `page_view`, `purchase` and `generate_lead` by default. Change them if your events have other names, as in the trigger (section 2).
+   - Keep **Cookie expiration in days** and **Clear cookie on conversion** at their default values, unless Click2Buy tells you otherwise.
+4. Click on the **Triggering** section and select the `Click2Buy — Page view and conversions` trigger (section 2).
+5. Save your tag.
+
+---
+
+## 🌐 4. Configure the Web Container
+
+The server container only receives the events that your web container sends to it. **If your web container already sends all its events to the server container, skip this section.**
+
+1. In your **Web** container, open your **Google Tag** (the one with your `G-XXXXXX` ID) and check that it has a `server_container_url` parameter pointing to your server container (e.g. `https://sgtm.your-website.com`).
+2. If your events are not sent to the server container yet, create a tag that forwards them:
+   1. Go to **Tags** and click **New**. Name the tag `GA4 — All events (to server)`.
+   2. **Tag type:** select **Google Analytics: GA4 Event**.
+   3. **Measurement ID:** enter your `G-XXXXXX` ID, the same as your Google Tag.
+   4. **Event Name:** enter `{{Event}}`. This built-in variable takes the name of each `dataLayer` event.
+   5. Click on the **Triggering** section and create a new trigger (click the `+` icon):
+      1. **Trigger type:** select **Custom Event**.
+      2. **Event name:** enter `.*` and check **Use regex matching**.
+      3. **This trigger fires on:** select **Some Custom Events** and add the condition `Event` — `does not match RegEx` — `^(gtm\.(js|dom|load)|page_view)$`. This excludes the GTM events and the page view, which is already sent by the Google Tag.
+      4. Name the trigger `All events (except GTM)` and click **Save**.
+   6. Save your tag.
+
+---
+
+## ✅ 5. Testing your Implementation
+
+1. Click the **Preview** button in your **Server** container, then in your **Web** container.
+2. **Page view:**
+   1. Open your website with the test URL provided by Click2Buy, which contains your retailer ID: `https://www.your-website.com/?c2bm=rid:<your retailer ID>;test:1`. Accept the cookie banner.
+   2. In the Preview of your server container, click the `page_view` event and check that the **Click2Buy — S2S attribution** tag is in **Tags Fired**.
+   3. Open your browser console (F12). In the **Application → Cookies** tab, verify that the `_c2b_attribution_id` cookie is set on your domain, with the value `rid:<your retailer ID>;test:1`.
+3. **Conversion:**
+   1. Complete a test purchase on your website.
+   2. In the Preview of your server container, click the `purchase` event and check that the **Click2Buy — S2S attribution** tag is in **Tags Fired**.
+   3. Click the tag and open the **Outgoing HTTP Requests** tab. The request to `analytics.clic2buy.com` must have a `200` status and the response `{"success":true,"action":"validation_test"}`.
+
+Thanks to the `test:1` parameter, this purchase is recorded as a **test sale**: Click2Buy can see it, but it is never counted in the brands' statistics. You can let us know once the test is done.
+
+💡 You can also trigger the conversion without placing an order, by pushing the event from your browser console, e.g. `dataLayer.push({ event: 'purchase', ecommerce: { transaction_id: 'TEST-123', value: 10, currency: 'EUR' } })`. This only works if your web container sends this event to the server container, under the name set in **Purchase event name**. Always use a fake `transaction_id`.
+
+---
+
+## 🚀 6. Publish
+
+Once you have verified the tag is working correctly, click **Submit** in **both** containers (Server and Web) to publish your changes to the live site.
+
+If you encounter any issues, contact `retailers@click2buy.com`.
